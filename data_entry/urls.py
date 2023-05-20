@@ -3,7 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path('main/', views.MainView.as_view(), name='main'),
+    #path('main/', views.MainView.as_view(), name='main'),
+    path('', views.MainView.as_view(), name='main'),
     path('meridian_passage_entry/', views.Meridian_Passage_EntryView.as_view(), name='meridian_passage_entry'),
     path('latitude/', views.LatitudeView.as_view(), name='latitude'),
     path('latitude_result/', views.Latitude_ResultView.as_view(), name='latitude_result'),
