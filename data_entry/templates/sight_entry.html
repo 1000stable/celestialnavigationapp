@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+        <h1>Sight Entry Page</h1>
+        <p>Enter inputs to Sight Reduction Calculation by direct computation</p>
+         
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit" value="Enter">
+        </form>
+
+        <p>Return to <a href="/main">Main Menu</a></p>
+    
+    </body>
+</html>

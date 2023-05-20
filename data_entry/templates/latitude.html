@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+        <h1>Latitude Page</h1>
+        <p>This is where we get the required inputs to calculate latitude</p>
+
+        <p>Time of meridian passage, Local: {{time_of_passage_local|date:"Y-m-d"}} {{time_of_passage_local|time:"H:i:s"}}</p>
+        <p>Time of meridian passage, UTC:   {{time_of_passage_utc|date:"Y-m-d"}} {{time_of_passage_utc|time:"H:i:s"}}</p>
+        <p>Celestial Body:                  {{celestial_body}}</p>
+        <p>Limb:                            {{limb}}</p>
+            
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit" value="Enter">
+        </form>
+
+
+        <p>Return to <a href="/main">Main Menu</a></p>
+
+    </body>
+</html>
