@@ -32,11 +32,11 @@ class Sight(object):
             #in calculations.  Used also in sunrise_set.py.  TODO put this in another class?
             degrees = float(longitude_str[0:3])
             minutes = (float(longitude_str[4:8]))/60
-            long_dec = degrees + minutes
+            long_float = degrees + minutes
             long_hemisphere = longitude_str[8:9]
             if long_hemisphere=="W":
-                long_dec = long_dec = long_dec * -1
-            return long_dec
+                long_float = long_float = long_float * -1
+            return long_float
         
         def convert_latitude(latitude_str):
             #takes a latitude string and converts it to a float value so that it may be used
@@ -84,7 +84,7 @@ class Sight(object):
         def convert_gha(gha_str):
             #takes a gha string formatted DDD MM.M and converts to float
             degrees = float(gha_str[0:4])
-            minutes = float((gha_str[4:8])/60.0)
+            minutes = float((gha_str[4:8]))/60.0
             gha_float = degrees + minutes
             return gha_float
         
@@ -92,7 +92,7 @@ class Sight(object):
             #takes a dec string formatted -DD MM.M and converts to float
             sign = dec_str[0:1]
             degrees = float(dec_str[1:3])
-            minutes = float((dec_str[4:8])/60.0)
+            minutes = float((dec_str[4:8]))/60.0
             dec_float = degrees + minutes
             if sign == "-":
                 dec_float = dec_float * -1
@@ -101,7 +101,7 @@ class Sight(object):
         def convert_sha(sha_str):
             #takes a gha string formatted DDD MM.M and converts to float
             degrees = float(sha_str[0:4])
-            minutes = float((sha_str[4:8])/60.0)
+            minutes = float((sha_str[4:8]))/60.0
             sha_float = degrees + minutes
             return sha_float
 
@@ -121,6 +121,38 @@ class Sight(object):
                 interpolated_gha = interpolated_gha - 360.0
 
             return interpolated_gha
+        
+        def calculate_lha(gha, longitude):
+            lha = gha + longitude
+            return lha
+
+        def calculate_height_calculated(dec, lha, lat):
+            k = math.pi / 180
+            if lha < 360:
+                lha = lha + 360
+            else:
+                lha = lha - 360
+            s = math.sin(dec * k)
+            c = (math.cos(dec * k)) * (math.cos(lha * k))
+            hc = math.asin((s * math.sin(lat * k)) + (c * math.cos(lat * k))) / k
+            return hc
+        
+        def calculate_azimuth_z(dec, lat, hc, lha):
+            k = math.pi /180
+            s = math.sin(dec * k)
+            c = (math.cos(dec * k)) * (math.cos(lha * k))
+            x = ((s * math.cos(lat * k)) - (c * math.sin(lat * k))) / math.cos(hc * k)
+            if x > 1:
+                x = 1
+            if x <-1:
+                x = -1
+            a = math.acos(x)
+            if lha > 180:
+                z = a /k
+            else:
+                z = 360 - (a / k)
+            return z
+
         
         #just acode example of converting a number to a string
         def convert_sun(time):
@@ -158,8 +190,8 @@ class Sight(object):
         self.index_error_float = convert_error(self.index_error)
         self.temperature_str = temperature
         self.temperature_float = convert_temperature(self.temperature_str)
-        self.pressure_float = pressure
-        self.pressure_float = convert_pressure(self.temperature_float)
+        self.pressure_str = pressure
+        self.pressure_float = convert_pressure(self.temperature_str)
         self.height_sextant_str = height_sextant
         self.height_sextant_float = convert_height_sextant(self.height_sextant_str)
         self.morning = morning
@@ -167,14 +199,19 @@ class Sight(object):
         self.dec_0_float = convert_dec(self.dec_0_str)
         self.dec_1_str = dec_1
         self.dec_1_float = convert_dec(self.dec_1_str)
-        self.dec = interpolate_dec(self.dec_0, self.dec_1, self.interpolation_factor)
+        self.dec = interpolate_dec(self.dec_0_float, self.dec_1_float, self.interpolation_factor)
         self.gha_0_str = gha_0
         self.gha_0_float = convert_gha(self.gha_0_str)
         self.gha_1_str = gha_1
         self.gha_1_float = convert_gha(self.gha_1_str)
-        self.gha = interpolate_gha(self.gha_0, self.gha_1, self.interpolation_factor)
+        self.gha = interpolate_gha(self.gha_0_float, self.gha_1_float, self.interpolation_factor)
         self.sha_str = sha
         self.sha_float = convert_sha(self.sha_str)
         self.semi_diameter_str = semi_diameter
         self.semi_diameter_float = convert_semi_diameter(self.semi_diameter_str)
+        self.lha = calculate_lha(self.gha, self.dr_longitude_float)
+        self.height_calculated_float = calculate_height_calculated(self.dec, self.lha, self.dr_latitude_float)
+        print(self.height_calculated_float)
+        self.azimuth_z = calculate_azimuth_z(self.dec, self.dr_latitude_float, self.height_calculated_float, self.lha)
+        print(self.azimuth_z)
         
