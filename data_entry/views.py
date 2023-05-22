@@ -208,9 +208,14 @@ class SightResultView(TemplateView):
         calc_number_to_delete = 1
         SightEntry.objects.filter(sight_number=calc_number_to_delete).delete()
         
-        sight_utc = this_calc.sight_time_utc 
-        sunset = "Plot distance will go here (this_calc.distance)"
+        sight_utc = this_calc.sight_time_utc
+        sight_drlatitude = this_calc.dr_latitude_str
+        sight_drlongitude = this_calc.dr_longitude_str
+        sight_plot = this_calc.plot
 
-        args = {'sight_utc':sight_utc, 'sunset':sunset}
+        args = {'sight_utc':sight_utc,
+                'sight_drlatitude':sight_drlatitude,
+                'sight_drlongitude':sight_drlongitude,
+                'sight_plot':sight_plot}
 
         return render(request, self.template_name, args)

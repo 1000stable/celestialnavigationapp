@@ -152,6 +152,37 @@ class Sight(object):
             else:
                 z = 360 - (a / k)
             return z
+        
+        def calculate_height_observed(eye_height, hs, error, press, temp, celestial_body, sd):
+            k = math.pi/180
+            dip = 0.0293 * math.sqrt(eye_height)
+            apparent_altitude = hs + error - dip
+            r = 0.0167 / (math.tan((apparent_altitude + 7.32 / (apparent_altitude + 4.32)) * k))
+            f = (0.23 * press) / (temp + 273)
+            refraction = r * f
+            if celestial_body == "Sun":
+                pa = 0.0024 * math.cos(apparent_altitude * k)
+            else:
+                #TODO: cater for moon venus and mars
+                pa = 0
+            height_observed = apparent_altitude - refraction + pa + sd
+            return height_observed
+        
+        def create_plot_str(ho, hc, azimuth_z):
+            p = ho - hc
+            direction = ""
+            if p > 0:
+                direction = "towards"
+            if p <= 0:
+                direction = "away"
+            nautical_miles = p * -60.0
+            nm_str = f"{nautical_miles}"
+            azimuth_str = f"{azimuth_z}"
+            if azimuth_z < 100:
+                plot_str = "0" + azimuth_str + "T / " + nm_str + "nm / " + direction
+            if azimuth_z >= 100:
+                plot_str = azimuth_str + "T / " + nm_str + "nm / " + direction
+            return plot_str
 
         
         #just acode example of converting a number to a string
@@ -211,7 +242,9 @@ class Sight(object):
         self.semi_diameter_float = convert_semi_diameter(self.semi_diameter_str)
         self.lha = calculate_lha(self.gha, self.dr_longitude_float)
         self.height_calculated_float = calculate_height_calculated(self.dec, self.lha, self.dr_latitude_float)
-        print(self.height_calculated_float)
         self.azimuth_z = calculate_azimuth_z(self.dec, self.dr_latitude_float, self.height_calculated_float, self.lha)
-        print(self.azimuth_z)
-        
+        self.height_observed_float = calculate_height_observed(self.eye_height, self.height_sextant_float,self.index_error_float,
+                                                               self.pressure_float, self.temperature_float, self.celestial_body,
+                                                               self.semi_diameter_float)
+        self.plot = create_plot_str(self.height_observed_float, self.height_calculated_float, self.azimuth_z)
+    
