@@ -9,13 +9,14 @@ h1 {
     padding-left: 1px;
 }
 
-/* 
+ 
 h2 {
-    width: 400px;
+    width: 200px;
     text-align: center;
+    font-size: small;
     color: blue;
     padding-left: 1px;
-} */
+} 
 
 .main{
     list-style: none;
