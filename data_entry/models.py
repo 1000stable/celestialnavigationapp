@@ -35,10 +35,9 @@ class Meridian_Passage_Entry(models.Model):
         default=LOWER,
         )
 
-    passage_lmt = models.DateTimeField(blank=False, help_text="YYYY-MM-DD HH:MM:SS")
+    passage_lmt = models.DateTimeField(blank=False, default="2023-01-01 00:00:00")
     time_zone = models.IntegerField(default=12)
-    dr_longitude = models.CharField(max_length=9, null=True, default = "000 00.0E", 
-                                    help_text="DDD MM.MX where X is either W(est) or E(ast)")
+    dr_longitude = models.CharField(max_length=9, null=True, default = "000 00.0E")
     
 
 class Meridian_Passage_Sight(models.Model):   

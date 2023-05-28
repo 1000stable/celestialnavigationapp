@@ -15,13 +15,17 @@
 
         <h1>Meridian Passage Entry</h1>
 
-        <form action="" method="POST">
-            {% csrf_token %}
-            {{form.as_p}}
-            <input type="submit" value="Enter">
-        </form>
-
-        <p>Return to <a href="/">Main Menu</a></p>
+        <ul class="main">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" value="Enter">
+            </form>
+        </ul>
     
+        <footer class="footer">
+            <p>Return to <a href="/">Main Menu</a></p>
+        </footer>
+
     </body>
 </html>
