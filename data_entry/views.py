@@ -35,13 +35,13 @@ class Meridian_Passage_EntryView(TemplateView):
 
         if form.is_valid():
             form.save()
-            return redirect('latitude')
+            return redirect('latitude_entry')
 
         return redirect('meridian_passage_entry')
     
 
 class LatitudeView(TemplateView):
-    template_name = 'latitude.html'
+    template_name = 'latitude_entry.html'
 
     def get(self, request):
         form = Meridian_Passage_SightForm()
