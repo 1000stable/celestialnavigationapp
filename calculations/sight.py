@@ -119,11 +119,11 @@ class SightEntry(object):
     
 class SightAlmanacEntry(object):
 
-    def __init__(self, interpolation_factor, dec_0, dec_1, gha_0, gha_1, sha, semi_diameter):
+    def __init__(self, interpolation_factor, limb, dec_0, dec_1, gha_0, gha_1, sha, semi_diameter):
 
         def convert_semi_diameter(sd_str):
             sd = float((sd_str[0:4]))/60
-            if self.limb == "Upper":
+            if limb == "Upper":
                 sd = sd * -1
             return sd
         

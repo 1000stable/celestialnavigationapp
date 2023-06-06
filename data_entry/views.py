@@ -201,7 +201,7 @@ class SightAlmanacEntryView(TemplateView):
         sight_utc = this_sight.sight_time_utc    
 
         args={'form':form,'sight_utc':sight_utc}
-        
+
         return render(request, self.template_name, args)
     
     def post(self, request):
@@ -235,6 +235,7 @@ class SightResultView(TemplateView):
             )
         this_almanac = sight.SightAlmanacEntry(
             this_sight.interpolation_factor,
+            this_sight.limb,
             SightAlmanacEntry.objects.all()[0].dec_0,
             SightAlmanacEntry.objects.all()[0].dec_1,
             SightAlmanacEntry.objects.all()[0].gha_0,
