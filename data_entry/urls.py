@@ -11,5 +11,6 @@ urlpatterns = [
     path('sunrise_sunset_entry/', views.SunriseSunsetEntryView.as_view(), name='sunrise_sunset_entry'),
     path('sunrise_sunset_result/', views.SunriseSunsetResultView.as_view(), name='sunrise_sunset_result'),
     path('sight_entry/', views.SightEntryView.as_view(), name='sight_entry'),
+    path('sight_almanac_entry/', views.SightAlmanacEntryView.as_view(), name='sight_almanac_entry'),
     path('sight_result/', views.SightResultView.as_view(), name='sight_result')
 ] 

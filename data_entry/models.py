@@ -125,6 +125,10 @@ class SightEntry(models.Model):
     pressure = models.CharField(max_length=4, default="1013")
     height_sextant = models.CharField(max_length=7, default="00 00.0", help_text="DD MM.M")
     morning = models.BooleanField(default=True)
+
+class SightAlmanacEntry(models.Model):
+    sight_number = models.IntegerField(default=1, unique=True)
+
     dec_0 = models.CharField(max_length=8, default="-00 00.0", help_text="-DD MM.M -South +North")
     dec_1 = models.CharField(max_length=8, default="-00 00.0", help_text="-DD MM.M -South +North")
     gha_0 = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")

@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
-from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SunriseSunsetEntryForm
-from .models import Meridian_Passage_Entry, Meridian_Passage_Sight, SunriseSunsetEntry, SightEntry
+from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SightAlmanacEntryForm, SunriseSunsetEntryForm
+from .models import Meridian_Passage_Entry, Meridian_Passage_Sight, SunriseSunsetEntry, SightEntry, SightAlmanacEntry
 from calculations import meridian_altitude, sunrise_sunset, sight
 from django.http import HttpResponse
 from django.template import loader
@@ -161,25 +161,64 @@ class SightEntryView(TemplateView):
     template_name = 'sight_entry.html'
 
     def get(self, request):
-        form = SightEntryForm()
+        form = SightEntryForm() 
         args={'form':form}
         return render(request, self.template_name, args)
-
 
     def post(self, request):
         form = SightEntryForm(request.POST)
 
         if form.is_valid():
             form.save()
-            return redirect('sight_result')
+            return redirect('sight_almanac_entry')
 
         return redirect('sight_entry')
+
+
+
     
+class SightAlmanacEntryView(TemplateView):
+    template_name = 'sight_almanac_entry.html'
+
+    def get(self, request):
+        form = SightAlmanacEntryForm()
+        if SightEntry.objects.all().first():
+            this_sight = sight.SightEntry(
+                SightEntry.objects.all()[0].celestial_body,
+                SightEntry.objects.all()[0].limb,
+                SightEntry.objects.all()[0].sight_time_lmt,
+                SightEntry.objects.all()[0].clock_error,
+                SightEntry.objects.all()[0].time_zone,
+                SightEntry.objects.all()[0].dr_latitude,
+                SightEntry.objects.all()[0].dr_longitude,
+                SightEntry.objects.all()[0].eye_height,
+                SightEntry.objects.all()[0].index_error,
+                SightEntry.objects.all()[0].temperature,
+                SightEntry.objects.all()[0].pressure,
+                SightEntry.objects.all()[0].height_sextant,
+                SightEntry.objects.all()[0].morning
+                ) 
+        sight_utc = this_sight.sight_time_utc    
+
+        args={'form':form,'sight_utc':sight_utc}
+        
+        return render(request, self.template_name, args)
+    
+    def post(self, request):
+        form = SightAlmanacEntryForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('sight_result')
+        
+        return redirect('sight_almanac_entry')
+
+
 class SightResultView(TemplateView):
     template_name = 'sight_result.html'
 
     def get(self, request):
-        this_calc = sight.Sight(
+        this_sight = sight.SightEntry(
             SightEntry.objects.all()[0].celestial_body,
             SightEntry.objects.all()[0].limb,
             SightEntry.objects.all()[0].sight_time_lmt,
@@ -192,13 +231,16 @@ class SightResultView(TemplateView):
             SightEntry.objects.all()[0].temperature,
             SightEntry.objects.all()[0].pressure,
             SightEntry.objects.all()[0].height_sextant,
-            SightEntry.objects.all()[0].morning,
-            SightEntry.objects.all()[0].dec_0,
-            SightEntry.objects.all()[0].dec_1,
-            SightEntry.objects.all()[0].gha_0,
-            SightEntry.objects.all()[0].gha_1,
-            SightEntry.objects.all()[0].sha,
-            SightEntry.objects.all()[0].semi_diameter
+            SightEntry.objects.all()[0].morning
+            )
+        this_almanac = sight.SightAlmanacEntry(
+            this_sight.interpolation_factor,
+            SightAlmanacEntry.objects.all()[0].dec_0,
+            SightAlmanacEntry.objects.all()[0].dec_1,
+            SightAlmanacEntry.objects.all()[0].gha_0,
+            SightAlmanacEntry.objects.all()[0].gha_1,
+            SightAlmanacEntry.objects.all()[0].sha,
+            SightAlmanacEntry.objects.all()[0].semi_diameter
             )
         
         #TODO: Output UTC time of sight so Almanac can be accessed
@@ -207,10 +249,24 @@ class SightResultView(TemplateView):
         #delete record filtered on calc_number which is unique.
         calc_number_to_delete = 1
         SightEntry.objects.filter(sight_number=calc_number_to_delete).delete()
+        SightAlmanacEntry.objects.filter(sight_number=calc_number_to_delete).delete()
         
-        sight_utc = this_calc.sight_time_utc
-        sight_drlatitude = this_calc.dr_latitude_str
-        sight_drlongitude = this_calc.dr_longitude_str
+        this_calc = sight.SightCalculation(
+            this_sight.dr_latitude_float,
+            this_sight.dr_longitude_float,
+            this_sight.eye_height,
+            this_sight.height_sextant_float,
+            this_sight.index_error_float,
+            this_sight.pressure_float,
+            this_sight.temperature_float,
+            this_sight.celestial_body,
+            this_almanac.dec,
+            this_almanac.gha,
+            this_almanac.semi_diameter_float
+        )
+        sight_utc = this_sight.sight_time_utc
+        sight_drlatitude = this_sight.dr_latitude_str
+        sight_drlongitude = this_sight.dr_longitude_str
         sight_plot = this_calc.plot
 
         args = {'sight_utc':sight_utc,
