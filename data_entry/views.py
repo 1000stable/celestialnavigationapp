@@ -340,8 +340,8 @@ class StarFinderLhaAriesResultView(TemplateView):
     
         #delete record filtered on calc_number which is unique.
         calc_number_to_delete = 1
-        StarFinderTime.objects.filter(sight_number=calc_number_to_delete).delete()
-        StarFinderGhaAries.objects.filter(sight_number=calc_number_to_delete).delete()
+        StarFinderTime.objects.filter(calc_number=calc_number_to_delete).delete()
+        StarFinderGhaAries.objects.filter(calc_number=calc_number_to_delete).delete()
         
         this_lha = starfinder.LhaCalculation(
             this_starfinder_gha.gha,
