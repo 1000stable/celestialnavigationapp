@@ -2,7 +2,7 @@
 from django import forms
 
 #import models from sight/models.py
-from .models import Meridian_Passage_Sight, Meridian_Passage_Entry, SunriseSunsetEntry, SightEntry, SightAlmanacEntry
+from .models import Meridian_Passage_Sight, Meridian_Passage_Entry, SunriseSunsetEntry, SightEntry, SightAlmanacEntry, StarFinderTime, StarFinderGhaAries
 
 #Create a Meriidan_Passage_EntryForm
 class Meridian_Passage_EntryForm(forms.ModelForm):
@@ -39,4 +39,18 @@ class SightAlmanacEntryForm(forms.ModelForm):
     #specify the name of model to use
     class Meta:
         model = SightAlmanacEntry
+        fields = "__all__"
+
+#Create a StarFinderTimeForm
+class StarFinderTimeEntryForm(forms.ModelForm):
+    #specify the name of model to use
+    class Meta:
+        model = StarFinderTime
+        fields = "__all__"
+
+#Create a StarFinderGhaAriesForm
+class StarFinderGhaAriesEntryForm(forms.ModelForm):
+    #specify the name of model to use
+    class Meta:
+        model = StarFinderGhaAries
         fields = "__all__"

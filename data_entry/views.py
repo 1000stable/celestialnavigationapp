@@ -1,8 +1,8 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
-from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SightAlmanacEntryForm, SunriseSunsetEntryForm
-from .models import Meridian_Passage_Entry, Meridian_Passage_Sight, SunriseSunsetEntry, SightEntry, SightAlmanacEntry
-from calculations import meridian_altitude, sunrise_sunset, sight
+from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SightAlmanacEntryForm, SunriseSunsetEntryForm, StarFinderTimeEntryForm, StarFinderGhaAriesEntryForm
+from .models import Meridian_Passage_Entry, Meridian_Passage_Sight, SunriseSunsetEntry, SightEntry, SightAlmanacEntry, StarFinderTime, StarFinderGhaAries
+from calculations import meridian_altitude, sunrise_sunset, sight, starfinder
 from django.http import HttpResponse
 from django.template import loader
 
@@ -174,8 +174,6 @@ class SightEntryView(TemplateView):
 
         return redirect('sight_entry')
 
-
-
     
 class SightAlmanacEntryView(TemplateView):
     template_name = 'sight_almanac_entry.html'
@@ -276,3 +274,86 @@ class SightResultView(TemplateView):
                 'sight_plot':sight_plot}
 
         return render(request, self.template_name, args)
+    
+
+class StarFinderTimeEntryView(TemplateView):
+    template_name = 'star_finder_time_entry.html'
+
+    def get(self, request):
+        form = StarFinderTimeEntryForm
+        args={'form':form}
+        return render(request, self.template_name, args)
+
+    def post(self, request):
+        form = StarFinderTimeEntryForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('star_finder_gha_aries_entry')
+
+        return redirect('star_finder_time_entry')
+    
+
+class StarFinderGhaAriesEntryView(TemplateView):
+    template_name = 'star_finder_gha_aries_entry.html'
+
+    def get(self, request):
+        form = StarFinderGhaAriesEntryForm()
+        if StarFinderTime.objects.all().first():
+            this_starfinder_time = starfinder.TimeEntry(
+                StarFinderTime.objects.all()[0].sight_time_lmt,
+                StarFinderTime.objects.all()[0].time_zone,
+                StarFinderTime.objects.all()[0].dr_longitude
+                ) 
+        sight_utc = this_starfinder_time.sight_time_utc    
+
+        args={'form':form,'sight_utc':sight_utc}
+
+        return render(request, self.template_name, args)
+    
+    def post(self, request):
+        form = StarFinderGhaAriesEntryForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('star_finder_lha_aries_result')
+        
+        return redirect('star_finder_gha_aries_entry')
+
+class StarFinderLhaAriesResultView(TemplateView):
+    template_name = 'star_finder_lha_aries_result.html'
+
+    def get(self, request):
+        this_starfinder_time = starfinder.TimeEntry(
+                StarFinderTime.objects.all()[0].sight_time_lmt,
+                StarFinderTime.objects.all()[0].time_zone,
+                StarFinderTime.objects.all()[0].dr_longitude
+                ) 
+        this_starfinder_gha = starfinder.GhaEntry(
+            this_starfinder_time.interpolation_factor,
+            this_starfinder_time.dr_longitude_float,
+            StarFinderGhaAries.objects.all()[0].gha_0,
+            StarFinderGhaAries.objects.all()[0].gha_1
+            )
+        star_finder_utc = this_starfinder_time.sight_time_utc
+        star_finder_drlongitude = this_starfinder_time.dr_longitude_str
+    
+        #delete record filtered on calc_number which is unique.
+        calc_number_to_delete = 1
+        StarFinderTime.objects.filter(sight_number=calc_number_to_delete).delete()
+        StarFinderGhaAries.objects.filter(sight_number=calc_number_to_delete).delete()
+        
+        this_lha = starfinder.LhaCalculation(
+            this_starfinder_gha.gha,
+            this_starfinder_time.dr_longitude_float
+        )
+
+        star_finder_lha_aries = this_lha.lha
+
+        args = {'star_finder_utc':star_finder_utc,
+                'star_finder_drlongitude':star_finder_drlongitude,
+                'star_finder_lha_aries':star_finder_lha_aries
+                }
+
+        return render(request, self.template_name, args)
+    

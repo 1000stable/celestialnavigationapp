@@ -12,5 +12,8 @@ urlpatterns = [
     path('sunrise_sunset_result/', views.SunriseSunsetResultView.as_view(), name='sunrise_sunset_result'),
     path('sight_entry/', views.SightEntryView.as_view(), name='sight_entry'),
     path('sight_almanac_entry/', views.SightAlmanacEntryView.as_view(), name='sight_almanac_entry'),
-    path('sight_result/', views.SightResultView.as_view(), name='sight_result')
+    path('sight_result/', views.SightResultView.as_view(), name='sight_result'),
+    path('star_finder_time_entry/', views.StarFinderTimeEntryView.as_view(), name='star_finder_time_entry'),
+    path('star_finder_gha_aries_entry/', views.StarFinderGhaAriesEntryView.as_view(), name='star_finder_gha_aries_entry'),
+    path('star_finder_lha_aries_result/', views.StarFinderLhaAriesResultView.as_view(), name='star_finder_lha_aries_result')
 ] 

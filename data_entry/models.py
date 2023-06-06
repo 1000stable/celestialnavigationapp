@@ -128,13 +128,23 @@ class SightEntry(models.Model):
 
 class SightAlmanacEntry(models.Model):
     sight_number = models.IntegerField(default=1, unique=True)
-
     dec_0 = models.CharField(max_length=8, default="-00 00.0", help_text="-DD MM.M -South +North")
     dec_1 = models.CharField(max_length=8, default="-00 00.0", help_text="-DD MM.M -South +North")
     gha_0 = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")
     gha_1 = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")
     sha = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")
-
     semi_diameter = models.CharField(max_length=4, default="00.0", help_text="MM.M")
+
+class StarFinderTime(models.Model):
+    calc_number = models.IntegerField(default=1, unique=True)
+    sight_time_lmt = models.DateTimeField(blank=False, help_text="YYYY-MM-DD HH:MM:SS")
+    time_zone = models.IntegerField(default=12)
+    dr_longitude = models.CharField(max_length=9, null=True, default = "000 00.0E", 
+                                    help_text="DDD MM.MX where X is either W(est) or E(ast)")
+    
+class StarFinderGhaAries(models.Model):
+    calc_number = models.IntegerField(default=1, unique=True)
+    gha_0 = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")
+    gha_1 = models.CharField(max_length=8, default="000 00.0", help_text="DDD MM.M")
 
     
