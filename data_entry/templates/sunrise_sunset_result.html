@@ -1,15 +1,27 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'data_entry/result.css' %}">
+    <title>Sunrise Sunset</title>    
+</head>
+
     <body>
 
-        <h1>Sunrise Sunset Result Page</h1>
-        <p>This is where we display the local time of sunrise and sunset</p>
+        <h1>Time of Sunrise and Sunset</h1>
 
         
         <p>Sunrise:                        {{sunrise}}</p>
         <p>Sunset :                        {{sunset}}</p>
-       
-        <p>Return to <a href="/">Main Menu</a></p>
+
+
+        <footer class="footer">
+            <p>Return to <a href="/">Main Menu</a></p>
+        </footer>
 
     </body>
 </html>
