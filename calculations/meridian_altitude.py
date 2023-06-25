@@ -128,10 +128,14 @@ class Meridian_Sight(object):
 
     def calc_latitude(self):
         def convert_latitude(latitude):
+            if latitude > 0:
+                hemisphere = "N"
+            if latitude < 0:
+                hemisphere = "S"
             lat_deg = math.floor(latitude)
             lat_min = (latitude - lat_deg) * 60.0
             lat_min = round(lat_min,1)
-            latitude = f"{lat_deg} {lat_min}"
+            latitude = f"{lat_deg} {lat_min} {hemisphere}"
             return latitude 
 
         meridian_zenith_distance = 90.0 - self.height_observed
