@@ -7,6 +7,20 @@ from django.http import HttpResponse
 from django.template import loader
 
 
+def check_longitude_format(longitude):
+    if len(longitude) == 9:
+        if  (longitude[0] in ["0","1"] and
+            longitude[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            longitude[2] in ["0","1","2","3","4","5","6","7","8","9"] and
+            longitude[3] == " " and
+            longitude[4] in ["0","1","2","3","4","5"] and
+            longitude[5] in ["0","1","2","3","4","5","6","7","8","9"] and
+            longitude[6] == "." and
+            longitude[7] in ["0","1","2","3","4","5","6","7","8","9"] and
+            longitude[8] in ["E", "W"]):
+            return True
+    return False
+        
 
 # Create your views here.
 class MainView(TemplateView):
@@ -32,11 +46,12 @@ class Meridian_Passage_EntryView(TemplateView):
 
     def post(self, request):
         form = Meridian_Passage_EntryForm(request.POST)
-
+        
         if form.is_valid():
-            form.save()
-            return redirect('latitude_entry')
-
+            if check_longitude_format(form.cleaned_data['dr_longitude']):
+                form.save()
+                return redirect('latitude_entry')
+        
         return redirect('meridian_passage_entry')
     
 
