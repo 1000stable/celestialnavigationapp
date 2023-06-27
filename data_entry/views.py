@@ -3,8 +3,6 @@ from django.shortcuts import render, redirect
 from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SightAlmanacEntryForm, SunriseSunsetEntryForm, StarFinderTimeEntryForm, StarFinderGhaAriesEntryForm
 from .models import Meridian_Passage_Entry, Meridian_Passage_Sight, SunriseSunsetEntry, SightEntry, SightAlmanacEntry, StarFinderTime, StarFinderGhaAries
 from calculations import meridian_altitude, sunrise_sunset, sight, starfinder
-from django.http import HttpResponse
-from django.template import loader
 
 
 def check_longitude_format(longitude):
@@ -20,7 +18,77 @@ def check_longitude_format(longitude):
             longitude[8] in ["E", "W"]):
             return True
     return False
-        
+
+def check_latitude_format(latitude):
+    if len(latitude) == 8:
+        if  (latitude[0] in ["0","1","2","3","4","5","6","7","8","9"] and
+            latitude[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            latitude[2] == " " and
+            latitude[3] in ["0","1","2","3","4","5"] and
+            latitude[4] in ["0","1","2","3","4","5","6","7","8","9"] and
+            latitude[5] == "." and
+            latitude[6] in ["0","1","2","3","4","5","6","7","8","9"] and
+            latitude[7] in ["N", "S"]):
+            return True
+    return False
+
+def check_height_sextant_format(height_sextant):
+    if len(height_sextant) == 7:
+        if  (height_sextant[0] in ["0","1","2","3","4","5","6","7","8","9"] and
+            height_sextant[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            height_sextant[2] == " " and
+            height_sextant[3] in ["0","1","2","3","4","5"] and
+            height_sextant[4] in ["0","1","2","3","4","5","6","7","8","9"] and
+            height_sextant[5] == "." and
+            height_sextant[6] in ["0","1","2","3","4","5","6","7","8","9"]):
+            return True
+    return False
+
+def check_declination_format(declination):
+    if len(declination) == 8:
+        if  (declination[0] in ["+","-"] and
+            declination[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            declination[2] in ["0","1","2","3","4","5","6","7","8","9"] and
+            declination[3] == " " and 
+            declination[4] in ["0","1","2","3","4","5","6","7","8","9"] and
+            declination[5] in ["0","1","2","3","4","5","6","7","8","9"] and
+            declination[6] == "." and
+            declination[7] in ["0","1","2","3","4","5","6","7","8","9"]):
+            return True
+    return False
+
+def check_index_error_format(index_error):
+    if len(index_error) == 5:
+        if  (index_error[0] in ["+","-"] and
+            index_error[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            index_error[2] in ["0","1","2","3","4","5","6","7","8","9"] and
+            index_error[3] == "." and
+            index_error[4] in ["0","1","2","3","4","5","6","7","8","9"]):
+            return True
+    return False
+
+def check_ha_format(ha):
+    if len(ha) == 8:
+        if  (ha[0] in ["0","1","2","3","4","5","6","7","8","9"] and
+            ha[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            ha[2] in ["0","1","2","3","4","5","6","7","8","9"] and
+            ha[3] == " " and
+            ha[4] in ["0","1","2","3","4","5"] and
+            ha[5] in ["0","1","2","3","4","5","6","7","8","9"] and
+            ha[6] == "." and
+            ha[7] in ["0","1","2","3","4","5","6","7","8","9"]):
+            return True
+    return False
+
+def check_semi_diameter_format(semi_diameter):
+    if len(semi_diameter) == 4:
+        if  (semi_diameter[0] in  ["0","1","2","3","4","5"] and
+            semi_diameter[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            semi_diameter[2] == "." and
+            semi_diameter[3] in ["0","1","2","3","4","5","6","7","8","9"]):
+            return True
+    return False
+
 
 # Create your views here.
 class MainView(TemplateView):
@@ -46,7 +114,7 @@ class Meridian_Passage_EntryView(TemplateView):
 
     def post(self, request):
         form = Meridian_Passage_EntryForm(request.POST)
-        
+
         if form.is_valid():
             if check_longitude_format(form.cleaned_data['dr_longitude']):
                 form.save()
@@ -84,10 +152,13 @@ class LatitudeView(TemplateView):
         form = Meridian_Passage_SightForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('latitude_result')
+            if (check_height_sextant_format(form.cleaned_data['height_sextant']) and
+                check_declination_format(form.cleaned_data['dec_0']) and
+                check_declination_format(form.cleaned_data['dec_1'])):
+                form.save()
+                return redirect('latitude_result')
 
-        return redirect('latitude_result')
+        return redirect('latitude_entry')
     
    
 class Latitude_ResultView(TemplateView):
@@ -143,8 +214,10 @@ class SunriseSunsetEntryView(TemplateView):
         form = SunriseSunsetEntryForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('sunrise_sunset_result')
+            if (check_latitude_format(form.cleaned_data['latitude']) and
+                check_longitude_format(form.cleaned_data['longitude'])):
+                form.save()
+                return redirect('sunrise_sunset_result')
 
         return redirect('sunrise_sunset_entry')
     
@@ -184,8 +257,12 @@ class SightEntryView(TemplateView):
         form = SightEntryForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('sight_almanac_entry')
+            if (check_latitude_format(form.cleaned_data['dr_latitude']) and
+                check_longitude_format(form.cleaned_data['dr_longitude']) and
+                check_index_error_format(form.cleaned_data['index_error']) and
+                check_height_sextant_format(form.cleaned_data['height_sextant'])):
+                form.save()
+                return redirect('sight_almanac_entry')
 
         return redirect('sight_entry')
 
@@ -221,8 +298,13 @@ class SightAlmanacEntryView(TemplateView):
         form = SightAlmanacEntryForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('sight_result')
+            if (check_declination_format(form.cleaned_data['dec_0']) and
+                check_declination_format(form.cleaned_data['dec_1']) and
+                check_ha_format(form.cleaned_data['gha_0']) and
+                check_ha_format(form.cleaned_data['gha_1']) and
+                check_semi_diameter_format(form.cleaned_data['semi_diameter'])):
+                form.save()
+                return redirect('sight_result')
         
         return redirect('sight_almanac_entry')
 
@@ -303,8 +385,9 @@ class StarFinderTimeEntryView(TemplateView):
         form = StarFinderTimeEntryForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('star_finder_gha_aries_entry')
+            if check_longitude_format(form.cleaned_data['dr_longitude']):
+                form.save()
+                return redirect('star_finder_gha_aries_entry')
 
         return redirect('star_finder_time_entry')
     
@@ -330,8 +413,10 @@ class StarFinderGhaAriesEntryView(TemplateView):
         form = StarFinderGhaAriesEntryForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('star_finder_lha_aries_result')
+            if (check_ha_format(form.cleaned_data['gha_0']) and
+                check_ha_format(form.cleaned_data['gha_1'])):
+                form.save()
+                return redirect('star_finder_lha_aries_result')
         
         return redirect('star_finder_gha_aries_entry')
 

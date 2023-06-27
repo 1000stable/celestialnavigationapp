@@ -11,15 +11,15 @@ h1 {
     background-color: whitesmoke;
 }
 
- 
 h2 {
     width: 400px;
     text-align: center;
-    font-size: small;
+    border-radius: 10px;
+    padding: 20px;
     color: blue;
     background-color: whitesmoke;
-    padding-left: 1px;
-} 
+}
+ 
 
 .main{
     list-style: none;
