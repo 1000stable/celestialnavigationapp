@@ -116,7 +116,7 @@ class Meridian_Passage_EntryView(TemplateView):
         form = Meridian_Passage_EntryForm(request.POST)
 
         if form.is_valid():
-            if check_longitude_format(form.cleaned_data['dr_longitude']):
+           if check_longitude_format(form.cleaned_data['dr_longitude']):
                 form.save()
                 return redirect('latitude_entry')
   
