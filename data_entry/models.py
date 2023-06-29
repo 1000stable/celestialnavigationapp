@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 
+
 # Create your models here
 class Meridian_Passage_Entry(models.Model):
     sight_number = models.IntegerField(default=1, unique=True)

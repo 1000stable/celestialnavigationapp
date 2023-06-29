@@ -8,7 +8,7 @@ from calculations import meridian_altitude, sunrise_sunset, sight, starfinder
 def check_longitude_format(longitude):
     if len(longitude) == 9:
         if  (longitude[0] in ["0","1"] and
-            longitude[1] in ["0","1","2","3","4","5","6","7","8","9"] and
+            longitude[1] in ["0","1","2","3","4","5","6","7","8"] and
             longitude[2] in ["0","1","2","3","4","5","6","7","8","9"] and
             longitude[3] == " " and
             longitude[4] in ["0","1","2","3","4","5"] and
@@ -69,7 +69,7 @@ def check_index_error_format(index_error):
 
 def check_ha_format(ha):
     if len(ha) == 8:
-        if  (ha[0] in ["0","1","2","3","4","5","6","7","8","9"] and
+        if  (ha[0] in ["0","1","2","3"] and
             ha[1] in ["0","1","2","3","4","5","6","7","8","9"] and
             ha[2] in ["0","1","2","3","4","5","6","7","8","9"] and
             ha[3] == " " and
@@ -119,7 +119,7 @@ class Meridian_Passage_EntryView(TemplateView):
             if check_longitude_format(form.cleaned_data['dr_longitude']):
                 form.save()
                 return redirect('latitude_entry')
-        
+  
         return redirect('meridian_passage_entry')
     
 
