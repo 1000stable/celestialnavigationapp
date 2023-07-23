@@ -95,7 +95,8 @@ class MainView(TemplateView):
     template_name = 'main.html'
 
     def get(self, request):
-            args = {}
+            msg = "Under development and not to be used for navigation!"
+            args = {'msg':msg}
             return render(request, self.template_name, args)
 
     def post(self, request):        
@@ -108,7 +109,9 @@ class Meridian_Passage_EntryView(TemplateView):
 
     def get(self, request):
         form = Meridian_Passage_EntryForm()
-        args={'form':form}
+        msg = "Enter details using the format shown"
+        
+        args={'form':form, 'msg':msg}
         return render(request, self.template_name, args)
 
 
