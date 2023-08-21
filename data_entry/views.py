@@ -1,3 +1,5 @@
+
+from django.urls import reverse
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from .forms import Meridian_Passage_SightForm, Meridian_Passage_EntryForm, SightEntryForm, SightAlmanacEntryForm, SunriseSunsetEntryForm, StarFinderTimeEntryForm, StarFinderGhaAriesEntryForm
@@ -90,7 +92,7 @@ def check_semi_diameter_format(semi_diameter):
     return False
 
 
-# Create your views here.
+#Create your views here.
 class MainView(TemplateView):
     template_name = 'main.html'
 
@@ -102,6 +104,18 @@ class MainView(TemplateView):
     def post(self, request):        
         args = {}
         return redirect(request, self.template_name, args)
+    
+# class MainView(TemplateView):
+#     template_name = reverse('main')
+
+#     def get(self, request):
+#             msg = "Under development and not to be used for navigation!"
+#             args = {'msg':msg}
+#             return render(request, self.template_name, args)
+
+#     def post(self, request):        
+#         args = {}
+#         return redirect(request, self.template_name, args)
     
 
 class Meridian_Passage_EntryView(TemplateView):
